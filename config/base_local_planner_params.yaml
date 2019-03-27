@@ -1,0 +1,14 @@
+TrajectoryPlannerROS:
+
+  holonomic_robot: false
+
+  sim_time: 1.0
+
+  meter_scoring: true
+  # gdist_scale: 0.1
+  pdist_scale: 3.0
+  # occdist_scale: 3.1
+  # heading_scoring: true
+  # heading_lookahead: 0.1
+  # heading_scoring_timestep: 0.1
+  

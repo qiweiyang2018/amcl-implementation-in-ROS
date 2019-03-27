@@ -1,0 +1,8 @@
+# Overall filter parameters
+update_min_d: 0.01 # improve amcl a lot
+update_min_a: 0.01 # improve amcl a lot
+min_particles: 20
+max_particles: 200
+
+# How many evenly-spaced beams in each scan to be used when updating the filter.
+laser_max_beams: 100 # too large, map/ctrl update loop missed
