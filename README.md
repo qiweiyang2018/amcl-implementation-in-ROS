@@ -1,6 +1,6 @@
 # Robot Localization implementation in ROS
 
-Qiwei Yang
+<center>Qiwei Yang</center>
 
 
 
