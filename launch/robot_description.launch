@@ -3,7 +3,7 @@
 
   <!-- send urdf to param server -->
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find udacity_bot)/urdf/udacity_bot.xacro'" />
-  <!--param name="robot_description" command="$(find xacro)/xacro '$(find udacity_bot)/urdf/mybot.xacro'" /-->
+  <!-- param name="robot_description" command="$(find xacro)/xacro inorder '$(find udacity_bot)/urdf/mybot.xacro'" /-->
   <param name = "use_gui" value = "true"/>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>

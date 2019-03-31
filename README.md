@@ -34,17 +34,21 @@ robot miscalculates its pose. [reference](https://github.com/csosa27/RoboND-Loca
 
 ## 2 Mainstream Filters: 
 
-Basic kalman filter is usually used for linear systems with Gaussian noise, and extended kalman filter can be applied for non-linear systems. Monte Carlo method, also called particle filter, can be applied for non-linear systems easily. 
+Given only the mean and standard deviation of noise, the Kalman filter is the best linear estimator [refer](http://biorobotics.ri.cmu.edu/papers/sbp_papers/integrated3/kleeman_kalman_basics.pdf). 
+Extended kalman filter can be applied for non-linear systems. On the other hand, Monte Carlo method, also called particle filter, can be applied for non-linear systems easily. 
 Particle filter is computationally more expensive than Kalman filter, but easier to implement and understand. 
 
-### 2.1 Kalman Filter(KF) and Extended Kalman Filter(EKF)
+### 2.1 Kalman Filter and Extended Kalman Filter  
 
-KF in a nutshell: 
+#### 2.1.1 Kalman Filter(KF)  
+KF in a nutshell:   
 
 A KF is an optimal estimation algorithm mainly invented by Rudolf E. Kalman. Common applications include guidance and navigation systems, computer vision systems and signal processing. It has two major applications:  
 
 1. The variables of interest can only be measurement indirectly.  
-2. Several measurements are available from various resources but are subject to noise.  
+2. Several measurements are available from various resources but are subject to noise. 
+
+It is **recursive** so that new measurements can be processed as they arrive.  
   
 Specifically in this project, there are two main uncertainties existing in the localization. One is the control or motion uncertainty, the other measurement noisy. In practice, these uncertainties follow the gaussian distribution pretty well.
 KF makes use of this property and consider both of them to estimate the location. See the figure below: 
@@ -56,10 +60,14 @@ KF makes use of this property and consider both of them to estimate the location
 "Predicted state estimate" mentioned in the figure is generated from robot motion through controller/actuator, which has uncertainty for sure. For example, the robot may
 have unwanted wheel slip, motor inaccuracy, etc. In addition, all measurements have noises, and not perfect. Usually considering their errors generate better estimation than considering only one of them along. 
 
+#### 2.1.2 Extended Kalman Filter(EKF)  
 
-### 2.2 Monte Carlo Localization method (also called Particle filters)
+Many practical systems have non-linear state update or measurement equations.
+### 2.2 Monte Carlo Localization method (also called Particle filters)  
 
-[Matlab MCL](https://www.mathworks.com/help/robotics/ug/monte-carlo-localization-algorithm.html)  
+![wolrd](./images/mcl.png)  
+
+[Matlab MCL introduction](https://www.mathworks.com/help/robotics/ug/monte-carlo-localization-algorithm.html)  
 Particle filters
 Monte Carlo localization algorithm similar to Kalman Filters estimates the posterior distribution of a robot’s position and orientation based on sensory information but instead of using Gaussians it uses particles to model state.
 
@@ -69,10 +77,15 @@ In the MCL example below all particles are uniformly distributed initially. In t
 
 ### 2.3 Filter comparison and summary
 
+Kalman filter: no need to store all history states, only the previous state information. Can update in real-time, but not optimal for non-linear systems. 
+
+Monte Carlo Localization: Take large memory because it needs to store all history data, good for non-linear systems. 
 
 ## 3 Simulation environment
 
 ### 3.1 Model creation through urdf/xacro
+
+![wolrd](./images/worldmap.png)  
 
 ### 3.2 Packages Used
 
@@ -93,72 +106,63 @@ and AMCL packages were crucial for a complete simulation
 of a mobile robot performing and successfully solving the
 localization problem.
 
+![world](./images/world2.png)  
+
 ### 3.3 Parameters
 
 To obtain most accurate localization results, several parameters were added, tested and tuned. The parameter values
-obtained for the udacity bot were tuned in an iterative process to see what values worked best. In the AMCL node,
-the most prominent parameters were the min particles and max particles which were set to 10 and 200, respectively.
-These, tuned the accuracy of the localization process. An increase of particles would mean an increase in accuracy,
-however, it would also have impact on computational efficiency, making processing slower. (See Table ?? for detailed parameter specifications) Several other parameters
-were tuned in the different config files. The transform tolerance, inflation radius, robot radius, and obstacle range
-were obtained after several iterations of testing and tuning. Increasing the inflation radius would have an impact on the
-costmap while detecting obstacles and their distance related to the robot. Whereas robot radius represents the radius
-of the robot as it relates to its environment. Meaning that having a lower robot radius value would increase chances of
-it getting stuck around obstacles, and a higher value would prompt the robot to think it was bigger than the space it
-had to pass by. Albeit briefly summarized here, the ROS Wiki Page) provides in-depth descriptions of each and every
-one of the parameters used for this project as well as other parameters that can be explored further. See TABLE 1 and
-TABLE 3 for detailed parameters specifications used for the udacity bot
+obtained for the udacity bot were tuned in an trial-and-error to see what values worked best. 
+
+See the table 1 and table 2 for the summary: 
 
 Table 1  
-Global and Local Costmap Parameters: Udacity Bot
+Global and Local Costmap Parameters: 
 
 |Parameter   |Value | Impact   |
 |:---|:---|:---|
-| global frame  | map   |   |
-| robot base frame  |robot footprint   |   |
-|update frequency   | 15.0   |   |
-|publish frequency   |15.0    |   |
-|width   |20.0   |   |
-|height   |20.0   |   |
-|resolution   |0.05   |   |
-| static map  |true   |   |
-| rolling window  |false   |   |
+| global frame  | map   | The frame does not move in the world  |
+| robot base frame  |robot footprint   | The robot's local fixed frame   |
+|update frequency   | 15.0   | system warning may occur if too high   |
+|publish frequency   |15.0    | system warning may occur if too high    |
+|width   |20.0   |The width of the map in meters   |
+|height   |20.0   | The height of the map in meters  |
+|resolution   |0.05   | same as static map |
+| static map  |true   |  incorporates mostly unchanging data  |
+| rolling window  |false   | if false, the map is global, otherwise local |
 
 
 Table 2    
-AMCL and Other Parameters: Udacity Bot
+AMCL and Other Parameters: 
 
-| Parameters  | value  | 
+| Parameters  | value  | Impact |
 |:---|:---|
-|min particles   | 10   |
-|max particles  |  200 |
-| obstacle range  | 2.5  |
-| raytrace range  |   |
-|transform tolerance   |   |
-|robot radius   |   |
-| inflation radius  |   |
-| holonomic robot  |   |
-|yaw goal tolerance   |   |
-|xy goal tolerance   |   |
-|sim time   |   |
-|meter scoring   |   |
-|max vel x   |   |
-|max vel y   |   |
-| max vel theta  |   |
-| acc lim theta  |   |
-| acc lim x  |   |
-|acc lim y   |   |
-| controller frequency  | 15  |
-|gdist scale   |   |
-| pdist scale   |   |
-|   |   |
-|   |   |
-|   |   |
-|   |   |
+|min particles   | 10   | Minimum allowed number of particles|
+|max particles  |  200 | Maximum allowed number of particles |
+| obstacle range  | default = 2.5  | maximum range in meters at which to insert obstacles into the costmap using sensor data|
+| raytrace range  | default = 3.0  | maximum range in meters at which to raytrace out obstacles from the map using sensor data|
+| transform tolerance   | accuracy  |
+| inflation radius  |  0.55  |0.55 meters or more away from obstacles as having equal obstacle cost |
+| controller frequency  | 15  |  
+
+At arriving, the robot's confidence regarding its location is much higher than starting, as the robot continuously updated its status through measurements. 
+![Arrived](./images/arrive.png)    
 
 
+## 4 Customized Robot: 
 
+![mybot](./images/mybot.png)  
 
-[reference 1](https://medium.com/@fernandojaruchenunes/udacity-robotics-nd-project-6-where-am-i-8cd657063585)
+## 5 Future Work: 
 
-[Other resource, kalman filter in matlab](https://blogs.mathworks.com/headlines/2016/09/08/this-56-year-old-algorithm-is-key-to-space-travel-gps-vr-and-more/)
+* I will try to implement these packages on a real robot through Jetson TX2 board. 
+* Explore the potentials of AMCL and Navigation packages in more complicated worlds. 
+
+[article reference](https://medium.com/@fernandojaruchenunes/udacity-robotics-nd-project-6-where-am-i-8cd657063585)  
+
+[kalman filter, matlab](https://blogs.mathworks.com/headlines/2016/09/08/this-56-year-old-algorithm-is-key-to-space-travel-gps-vr-and-more/)  
+
+[Robot mapping] (http://ais.informatik.uni-freiburg.de/teaching/ws13/mapping/pdf/slam04-ekf.pdf)  
+
+[biorobotics kalman filter](http://biorobotics.ri.cmu.edu/papers/sbp_papers/integrated3/kleeman_kalman_basics.pdf)  
+
+[CMU kalman filter] (http://www.cs.cmu.edu/~16831-f14/notes/F10/16831_lecture20_21_zlamb_jlibby/16831_lecture20_21_zlamb_jlibby.pdf)  
