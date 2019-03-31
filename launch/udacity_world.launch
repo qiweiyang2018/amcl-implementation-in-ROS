@@ -3,9 +3,7 @@
 <launch>
 
   <include file="$(find udacity_bot)/launch/robot_description.launch"/>
-  <include file="$(find udacity_bot)/launch/amcl.launch"/>
-
-  <arg name="world" default="empty"/> 
+  <arg name="world" default="empty"/>
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
   <arg name="gui" default="true"/>
@@ -22,8 +20,10 @@
   </include>
 
   <!--spawn a robot in gazebo world-->
+
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -param robot_description -model udacity_bot"/>
 
-  <!--launch rviz-->
-  <node name="rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(find udacity_bot)/launch/Rvizconfig.rviz"/>
+  <!--RVIZ-->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find udacity_bot)/rviz/udacity_bot.rviz"/>
+
 </launch>
