@@ -1,10 +1,11 @@
 # Robot Localization implementation in ROS
 
-<center>Qiwei Yang</center>
+Qiwei Yang
 
 
 
 [![video](https://img.youtube.com/vi/P2CsBjCM1Qk/0.jpg)](https://www.youtube.com/watch?v=P2CsBjCM1Qk)
+
 
 ### Abstract
 
@@ -12,8 +13,8 @@ Robot localization is essential to solve robot path planning / navigation tasks.
 unexpected environments, etc, is a quite challenging. Accurate estimation of the robot states or poses, which localization aims to accomplish, is critical in decision making under these
 uncertainty.
       
-There are several powerful algorithms to estimate the robot location, two of which are covered in this project, Kalman Filter and Monte Carlo Localization. ROS community provides packages like AMCL and the Navigation Stack
-to easily implement these algorithms in Gazebo simulator.  
+There are several powerful algorithms to estimate the robot location, two of which are covered in this project, Kalman Filter and Monte Carlo Localization. ROS community provides packages like AMCL and Navigation
+to allow users to easily implement these algorithms in Gazebo simulator.  
 
 ## 1. Introduction
 
@@ -31,29 +32,34 @@ kidnapped at any time and moved to another location of the map. Solving for the 
 recover in the event that it loses track of its pose, due to either being moved to other positions, or even when the
 robot miscalculates its pose. [reference](https://github.com/csosa27/RoboND-Localization-Project/blob/master/Where%20Am%20I.pdf)
 
-In this project, the global localization challenge will be tackled, via ROS packages, to help the two robots traverse a
-known map (see Fig. 1).
+## 2 Mainstream Filters: 
 
-In this project, you will learn to utilize ROS packages to accurately localize a mobile robot inside a provided map in the Gazebo and RViz simulation environments.
+Basic kalman filter is usually used for linear systems with Gaussian noise, and extended kalman filter can be applied for non-linear systems. Monte Carlo method, also called particle filter, can be applied for non-linear systems easily. 
+Particle filter is computationally more expensive than Kalman filter, but easier to implement and understand. 
 
-Over the course of the project, as part of the Robotics Software Engineer Nanodegree, you will learn about several aspects of robotics with a focus on ROS, including -
+### 2.1 Kalman Filter(KF) and Extended Kalman Filter(EKF)
 
-Building a mobile robot for simulated tasks.
+KF in a nutshell: 
 
-Creating a ROS package that launches a custom r-obot model in a Gazebo world and utilizes packages like AMCL and the Navigation Stack.
+A KF is an optimal estimation algorithm mainly invented by Rudolf E. Kalman. Common applications include guidance and navigation systems, computer vision systems and signal processing. It has two major applications:  
 
-Exploring, adding, and tuning specific parameters corresponding to each package to achieve the best possible localization results.
+1. The variables of interest can only be measurement indirectly.  
+2. Several measurements are available from various resources but are subject to noise.  
+  
+Specifically in this project, there are two main uncertainties existing in the localization. One is the control or motion uncertainty, the other measurement noisy. In practice, these uncertainties follow the gaussian distribution pretty well.
+KF makes use of this property and consider both of them to estimate the location. See the figure below: 
 
-## 2 Main Filters: 
+![kalmanfilter](./images/kf.png)  
 
-### 2.1 Kalman Filter and Extended Kalman Filter
+[MATLAB reference](https://www.mathworks.com/videos/understanding-kalman-filters-part-5-nonlinear-state-estimators-1495052905460.html)  
 
-The Kalman filter estimates the value of a variable by updating its estimate as measurement data is collected filtering out the noise. Kalman Filters models the state uncertainty using Gaussians and it is capable of making accurate estimates with just a few data points.
+"Predicted state estimate" mentioned in the figure is generated from robot motion through controller/actuator, which has uncertainty for sure. For example, the robot may
+have unwanted wheel slip, motor inaccuracy, etc. In addition, all measurements have noises, and not perfect. Usually considering their errors generate better estimation than considering only one of them along. 
 
-KF starts with an initial state estimate then performs the following cycle: measurement update produced by sensor measurements followed by a state prediction from control actions.
 
 ### 2.2 Monte Carlo Localization method (also called Particle filters)
 
+[Matlab MCL](https://www.mathworks.com/help/robotics/ug/monte-carlo-localization-algorithm.html)  
 Particle filters
 Monte Carlo localization algorithm similar to Kalman Filters estimates the posterior distribution of a robot’s position and orientation based on sensory information but instead of using Gaussians it uses particles to model state.
 
@@ -153,11 +159,6 @@ AMCL and Other Parameters: Udacity Bot
 
 
 
-
-[reference 2]
-
-
-To be continued.. 
-
 [reference 1](https://medium.com/@fernandojaruchenunes/udacity-robotics-nd-project-6-where-am-i-8cd657063585)
 
+[Other resource, kalman filter in matlab](https://blogs.mathworks.com/headlines/2016/09/08/this-56-year-old-algorithm-is-key-to-space-travel-gps-vr-and-more/)
