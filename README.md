@@ -77,6 +77,10 @@ In the MCL example below all particles are uniformly distributed initially. In t
 
 ### 2.3 Filter comparison and summary
 
+![Comp](./images/MCLvsEKF.png)   
+
+[referring to Udacity course materials] 
+
 Kalman filter: no need to store all history states, only the previous state information. Can update in real-time, but not optimal for non-linear systems. 
 
 Monte Carlo Localization: Take large memory because it needs to store all history data, good for non-linear systems. 
